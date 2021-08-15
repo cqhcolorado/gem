@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<adios-config>
+    <io name="field">
+        <engine type="SST">
+        </engine>
+    </io>
+    <io name="density">
+        <engine type="SST">
+        </engine>
+    </io>
+</adios-config>

@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<adios-config host-language="Fortran">
+
+<adios-group name="coupling">
+  <var name="nphi" type="integer" />
+  <var name="iphi" type="integer" />
+  <var name="first_node" type="integer" />
+  <var name="last_node" type="integer" />
+  <var name="node_number" type="integer" />
+  <var name="cce_side" type="integer" />
+  <var name="cce_model" type="integer" />
+  <var name="time" type="real*8" />
+  <var name="step" type="integer" />
+  <var dimensions="node_number" name="data" type="real*8" />
+</adios-group>
+
+<adios-group name="coupling_fields">
+  <var name="nphi" type="integer"/>
+  <var name="iphi" type="integer"/>
+  <var name="first_node" type="integer"/>
+  <var name="last_node" type="integer"/>
+  <var name="node_number" type="integer"/>
+  <var name="cce_side" type="integer"/>
+  <var name="cce_model" type="integer"/>
+  <var name="time" type="real*8"/>
+  <var name="step" type="integer"/>
+  <var name="dpot0" type="real*8" dimensions="node_number"/>
+  <var name="dpot1" type="real*8" dimensions="node_number"/>
+  <var name="pot0" type="real*8" dimensions="node_number"/>
+</adios-group>
+
+<adios-group name="coef_GEM_XGC">
+  <var name="nphi" type="integer"/>
+  <var name="cce_all_surface_node_number" type="integer"/>
+  <var name="coef_GEM_XGC%jy1" type="integer" dimensions="cce_all_surface_node_number,nphi"/>
+  <var name="coef_GEM_XGC%jy2" type="integer" dimensions="cce_all_surface_node_number,nphi"/>
+  <var name="coef_GEM_XGC%wy1" type="real*8" dimensions="cce_all_surface_node_number,nphi"/>
+  <var name="coef_GEM_XGC%wy2" type="real*8" dimensions="cce_all_surface_node_number,nphi"/>
+</adios-group>
+
+<adios-group name="coef_XGC_GEM">
+  <var name="imx_1" type="integer"/>
+  <var name="jmx_1" type="integer"/>
+  <var name="max_len" type="integer"/>
+  <var name="coef_XGC_GEM%z1" type="integer" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%z2" type="integer" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%jl1" type="integer" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%jl2" type="integer" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%jr1" type="integer" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%jr2" type="integer" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%wz1" type="real*8" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%wz2" type="real*8" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%wl1" type="real*8" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%wl2" type="real*8" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%wr1" type="real*8" dimensions="imx_1,jmx_1,max_len"/>
+  <var name="coef_XGC_GEM%wr2" type="real*8" dimensions="imx_1,jmx_1,max_len"/>
+</adios-group>
+
+<adios-group name="gem_xgc_3d">
+  <var name="nphi" type="integer"/>
+  <var name="cce_all_node_number" type="integer"/>
+  <var name="imx_1" type="integer"/>
+  <var name="jmx_1" type="integer"/>
+  <var name="kmx_1" type="integer"/>
+  <var name="xgc_den_3d" type="real*8" dimensions="cce_all_node_number,nphi"/>
+  <var name="xgc_field_3d" type="real*8" dimensions="cce_all_node_number,nphi"/>
+  <var name="gem_den_3d" type="real*8" dimensions="imx_1,jmx_1,kmx_1"/>
+  <var name="gem_field_3d" type="real*8" dimensions="imx_1,jmx_1,kmx_1"/>
+</adios-group>
+
+<adios-group name="equil">
+  <var name="nr_1" type="integer"/>
+  <var name="ntheta_1" type="integer"/>
+  <var name="npsi_surf" type="integer"/>
+  <var name="surf_maxlen" type="integer"/>
+  <var name="nnode" type="integer"/>
+  <attribute name="nspace" path="/" type="integer" value="2"/>
+  <var name="thflx" type="real*8" dimensions="nr_1,ntheta_1"/>
+  <var name="qhat" type="real*8" dimensions="nr_1,ntheta_1"/>
+  <var name="yfn" type="real*8" dimensions="nr_1,ntheta_1"/>
+  <var name="sf" type="real*8" dimensions="nr_1"/>
+  <var name="radius" type="real*8" dimensions="nr_1,ntheta_1"/>
+  <var name="hght" type="real*8" dimensions="nr_1,ntheta_1"/>
+  <var name="zfnth" type="real*8" dimensions="ntheta_1"/>
+  <var name="thfnz" type="real*8" dimensions="ntheta_1"/>
+  <var name="surf_len" type="integer" dimensions="npsi_surf"/>
+  <var name="surf_idx" type="integer" dimensions="surf_maxlen,npsi_surf"/>
+  <var name="rz" type="real*8" dimensions="nspace,nnode"/>
+  <var name="bfld" type="real*8" dimensions="nr_1,ntheta_1"/>
+  <var name="dbdth" type="real*8" dimensions="nr_1,ntheta_1"/>
+  <var name="grcgt" type="real*8" dimensions="nr_1,ntheta_1"/>
+  <var name="jacob" type="real*8" dimensions="nr_1,ntheta_1"/>
+</adios-group>
+
+<adios-group name="xgc_gem_debug">
+  <var name="nphi" type="integer"/>
+  <var name="cce_all_node_number" type="integer"/>
+  <var name="imx_1" type="integer"/>
+  <var name="jmx_1" type="integer"/>
+  <var name="kmx_1" type="integer"/>
+  <var name="xgc_3d" type="real*8" dimensions="cce_all_node_number,nphi"/>
+  <var name="gem_3d" type="real*8" dimensions="imx_1,jmx_1,kmx_1"/>
+</adios-group>
+
+<method priority="3" method="MPI" iterations="100" group="coupling"/>
+<method priority="3" method="MPI" iterations="100" group="coupling_fields"/>
+<method priority="3" method="POSIX" iterations="100" group="coef_GEM_XGC"/>
+<method priority="3" method="POSIX" iterations="100" group="coef_XGC_GEM"/>
+<method priority="3" method="MPI" iterations="100" group="gem_xgc_3d"/>"
+<method priority="3" method="MPI" iterations="100" group="equil"/>
+<method priority="3" method="MPI" iterations="100" group="xgc_gem_debug"/>
+
+<!-- <buffer size-MB="2000" allocate-time="now" /> -->
+
+</adios-config>
