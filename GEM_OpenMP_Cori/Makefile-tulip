@@ -1,0 +1,137 @@
+SRCS =	gem_com.F90 gem_equil.F90 gem_main.F90 gem_outd.F90 gem_fcnt.F90 gem_fft_wrapper.F90 gem_gkps_adi.F90 coupling_core_edge.F90 mapping.F90 out3d.F90 adios2_comm_mod.F90 pushe.F90
+
+OBJS =	gem_com.o gem_equil.o gem_main.o gem_outd.o gem_fcnt.o gem_fft_wrapper.o gem_gkps_adi.o coupling_core_edge.o mapping.o out3d.o adios2_comm_mod.o pushe.o
+
+#DFFTPACK=/global/homes/j/jycheng/sourcecode/dfftpack/libdfftpack.a
+#DFFTPACK=/ccs/home/cycheng/git/dfftpack/libdfftpack.a
+DFFTPACK=dfftpack/libdfftpack.a
+LIBS = $(DFFTPACK)
+PLIB = gem_pputil.o
+
+#COUPLING_OPT := -DCOUPLING -DKINETIC_ELECTRON -DRK4
+COUPLING_OPT := -UCOUPLING -UKINETIC_ELECTRON -URK4
+#DEBUG_MAP_OPT := -DDEBUG_MAPPING
+MAP_OPT := -DMAP_PARALLEL -DGYRO_TEST -DDIRECT_F
+#XGC_3D_OUTPUT_OPT := -DXGC_3D_OUTPUT
+XGC_3D_OUTPUT_OPT := -UXGC_3D_OUTPUT
+EQUIL_OUTPUT_OPT := -DEQUIL_OUTPUT
+ADIOS2_OPT := -DADIOS2 #-DADIOS2_DEBUG
+OPENMP_OPT := -DOPENMP 
+OPENACC_OPT := -DOPENACC  
+#F90 = ftn -qopenmp
+#F90 = mpifort -DOLD_PMOVE #$(OPENACC_OPT)
+#F90 = mpifort $(OPENACC_OPT) #-DOLD_PMOVE #$(OPENACC_OPT)
+#F90 = mpif90 -I$(MPI_HOME)/include -I$(MPI_HOME)/lib  $(OPENACC_OPT) #-DOLD_PMOVE #$(OPENACC_OPT)
+F90 = mpif90 $(OPENACC_OPT) -h acc -h acc_model=auto_async_none
+
+#OPT = -FR -r8 -heap-arrays -O2 -g -traceback -check bounds
+#OPT = -FR -r8 -O3 -DADIOS=1 -cpp -fpp -no-ipo -mkl -check bounds -traceback
+#OPT = -fast -r8 -Kieee -llapack -lblas -DADIOS=1 -g #-Minfo=accel -acc -ta=tesla:pinned
+#OPT = -fast -r8 -Kieee -llapack -lblas -g -cpp -Minfo=accel -acc -ta=nvidia:cc70
+#OPT = -O0 -r8 -Kieee -llapack -lblas -g -cpp -Mbounds #-Minfo=accel -acc -ta=nvidia:cc70 
+OPT = -homp  -g -e F  -s real64 -e m  -h list=a 
+OPT += -e 0 -h heap_allocate
+#OPT = -O0 -r8 -Kieee -llapack -lblas -g -cpp -Mbounds -Minfo=accel -acc -ta=nvidia:cc70
+F90 += $(COUPLING_OPT) $(XGC_3D_OUTPUT_OPT) $(EQUIL_OUTPUT_OPT) $(DEBUG_MAP_OPT) $(MAP_OPT) $(ADIOS2_OPT)
+
+# USER_LIB_DIR ?= /ccs/home/shku/Software/install/summit
+# ADIOS_DIR ?= ${USER_LIB_DIR}/adios/devel/pgi19.4
+
+# set(ADIOS2_ROOT "/home/users/coe0078/WORK/ADIOS/ADIOS2/build_gnu/install")
+# set(ADIOS1_ROOT,"/home/users/coe0078/WORK/ADIOS/ADIOS1/build_gnu/install")
+#ADIOS_DIR=/home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install
+#ADIOS_INC=$(shell $(ADIOS_DIR)/bin/adios_config -f -c)
+#
+#ADIOS_LIB=$(shell $(ADIOS_DIR)/bin/adios_config -f -l)
+
+#ADIOS2_DIR ?= /gpfs/alpine/world-shared/csc143/jyc/summit/sw/adios2/devel/pgi
+#ADIOS2_DIR ?= /ccs/home/cycheng/software/adios2/adios2-v2.4-pgi19.9-nonrdma
+
+
+ADIOS2_DIR=/home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install
+ADIOS2_INC=$(shell $(ADIOS2_DIR)/bin/adios2-config --fortran-flags)
+ADIOS_INC+= -p$(ADIOS2_DIR)/../bindings/Fortran/
+ADIOS2_LIB=$(shell $(ADIOS2_DIR)/bin/adios2-config --fortran-libs --cxx-libs)
+
+
+# ADIOS2_LIB=\
+# -Wl,-rpath,/home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install/lib64 /home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install/lib64/libadios2_cxx11_mpi.so.2.6.0 /home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install/lib64/libadios2_cxx11.so.2.6.0 -Wl,-rpath-link,/home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install/lib64 -Wl,-rpath,/home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install/lib64 /home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install/lib64/libadios2_fortran_mpi.so.2.6.0 /home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install/lib64/libadios2_fortran.so.2.6.0 -Wl,-rpath-link,/home/users/coe0078/WORK/ADIOS/ADIOS2/build_cray/install/lib64
+
+#USER_LIB_DIR=/project/projectdirs/m499/Software
+
+#ADIOS2_DIR=$(USER_LIB_DIR)/adios2/DEFAULT/cori_haswell/DEFAULT
+
+#ADIOS2_INC=$(shell $(ADIOS2_DIR)/bin/adios2-config --fortran-flags)
+#ADIOS2_INC=-DADIOS2_HAVE_MPI_F -I/global/common/sw/cray/cnl7/haswell/adios2/2.3.1/intel/19.0.3.199/j66bqfb/include/fortran
+
+#ADIOS2_INC=-isystem /global/u2/j/jycheng/sourcecode/adios2.4.0/include -Wl,-rpath,/global/u2/j/jycheng/sourcecode/adios2.4.0/lib64 /global/u2/j/jycheng/sourcecode/adios2.4.0/lib64/libadios2.so.2.4.0 -Wl,-rpath-link,/global/u2/j/jycheng/sourcecode/adios2.4.0/lib64 -isystem /global/u2/j/jycheng/sourcecode/adios2.4.0/include -std=gnu++11 -Wl,-rpath,/global/u2/j/jycheng/sourcecode/adios2.4.0/lib64 /global/u2/j/jycheng/sourcecode/adios2.4.0/lib64/libadios2.so.2.4.0 -Wl,-rpath-link,/global/u2/j/jycheng/sourcecode/adios2.4.0/lib64 -DADIOS2_HAVE_MPI_F -I/global/u2/j/jycheng/sourcecode/adios2.4.0/include/adios2/fortran -Wl,-rpath,/global/u2/j/jycheng/sourcecode/adios2.4.0/lib64 /global/u2/j/jycheng/sourcecode/adios2.4.0/lib64/libadios2_f.so
+
+#ADIOS2_LIB=$(shell $(ADIOS2_DIR)/bin/adios2-config --fortran-libs --cxx-libs)
+#ADIOS2_LIB=-Wl,-rpath,/global/common/sw/cray/cnl7/haswell/adios2/2.3.1/intel/19.0.3.199/j66bqfb/lib64 -L/global/common/sw/cray/cnl7/haswell/adios2/2.3.1/intel/19.0.3.199/j66bqfb/lib64/libadios2.so.2.3.1 -Wl,-rpath-link, /global/common/sw/cray/cnl7/haswell/adios2/2.3.1/intel/19.0.3.199/j66bqfb/lib64 -Wl,-rpath, /global/common/sw/cray/cnl7/haswell/adios2/2.3.1/intel/19.0.3.199/j66bqfb/lib64 -L/global/common/sw/cray/cnl7/haswell/adios2/2.3.1/intel/19.0.3.199/j66bqfb/lib64/libadios2_f.so -L/global/common/sw/cray/cnl7/haswell/adios2/2.3.1/intel/19.0.3.199/j66bqfb/lib64/libadios2.so.2
+#
+#PSPLINE_DIR=/ccs/proj/phy122/dazevedo/titan/ntcc_pspline
+#PSPLINE_DIR=/project/projectdirs/m499/Software/pspline/DEFAULT/cori_haswell/intel
+
+#PSPLINE_DIR=/ccs/home/shku/Software/install/summit/pspline/pgi19.4
+PSPLINE_DIR=./pspline
+#
+PSPLINE_INC=-I$(PSPLINE_DIR)/include -I$(PSPLINE_DIR)/mod
+#
+#PSPLINE_LIB=-L$(PSPLINE_DIR)/lib -lpspline -lezcdf
+PSPLINE_LIB=-L$(PSPLINE_DIR)/lib -lpspline
+
+
+#LAPACK_LIB=-L$(LAPACK_DIR) -llapack -L$(BLASDIR)  -lblas
+LAPACK_LIB= -L$(AOCL_PATH)/lib -llapacke -lflame -lblis
+LIB := $(ADIOS_INC) $(PSPLINE_INC) $(ADIOS2_INC) 
+LD_LIB := $(ADIOS_LIB) $(PSPLINE_LIB) $(ADIOS2_LIB)  $(LAPACK_LIB)
+# LD_LIB := $(ADIOS_LIB) $(PSPLINE_LIB) $(ADIOS2_LIB) /lib64/librt.so.1
+
+LDFLAGS = 
+
+#all : gem
+
+gem_main: gem_equil.o gem_main.o gem_outd.o gem_fcnt.o gem_pputil.o gem_com.o gem_fft_wrapper.o gem_gkps_adi.o coupling_core_edge.o mapping.o out3d.o adios2_comm_mod.o pushe.o
+	$(F90)  -o gem_main $(OPT) $(OBJS) $(PLIB) $(LIBS) $(LIB) $(LD_LIB) 
+
+gem_pputil.o: gem_pputil.F90
+	$(F90) -c $(OPT) gem_pputil.F90
+
+gem_com.o: gem_com.F90 gem_pputil.o
+	$(F90) -c $(OPT) gem_com.F90
+
+gem_equil.o: gem_equil.F90 gem_pputil.o
+	$(F90) -c $(OPT) gem_equil.F90
+
+pushe.o: pushe.F90 gem_com.o gem_equil.o
+	$(F90) -c $(OPT) pushe.F90
+
+adios2_comm_mod.o : adios2_comm_mod.F90 gem_com.o
+	$(F90) -c $(OPT) $(LIB) $(LD_LIB) adios2_comm_mod.F90
+
+coupling_core_edge.o : coupling_core_edge.F90 gem_com.o adios2_comm_mod.o
+	$(F90) -c $(OPT)  $(LIB) $(LD_LIB) coupling_core_edge.F90
+
+mapping.o : mapping.F90 gem_com.o gem_equil.o coupling_core_edge.o adios2_comm_mod.o
+	$(F90) -c $(OPT)  $(LIB) $(LD_LIB) mapping.F90
+
+gem_gkps_adi.o: gem_gkps_adi.F90 gem_com.o gem_equil.o gem_pputil.o
+	$(F90) -c $(OPT) gem_gkps_adi.F90
+
+out3d.o: out3d.F90 gem_com.F90 gem_com.o gem_equil.o coupling_core_edge.o mapping.o
+	$(F90) -c $(OPT) $(LIB) $(LD_LIB) out3d.F90
+
+gem_main.o: gem_main.F90 gem_fft_wrapper.o gem_pputil.o gem_com.o gem_equil.o gem_gkps_adi.o coupling_core_edge.o mapping.o out3d.o pushe.o
+	$(F90) -c $(OPT) $(LIB) $(LD_LIB) gem_main.F90
+
+gem_outd.o: gem_outd.F90 gem_fft_wrapper.o gem_pputil.o gem_com.o gem_equil.o
+	$(F90) -c $(OPT) gem_outd.F90
+
+gem_fcnt.o: gem_fcnt.F90
+	$(F90) -c $(OPT) gem_fcnt.F90
+
+gem_fft_wrapper.o: gem_fft_wrapper.F90
+	$(F90) -c $(OPT) gem_fft_wrapper.F90
+
+clean:
+	rm -f *.o *.lst *.mod gem_main
