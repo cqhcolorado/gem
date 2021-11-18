@@ -1867,7 +1867,7 @@ if(jump_opt==0)then
 grid11_start_tm=grid11_start_tm+MPI_WTIME()
 !!$omp target data map(to:mm(ns),z3(:,ns),y3(:,ns),w3(:,ns),mu(:,ns),x3(:,ns),w3e(1:mme),w111(1:mme),x3e(1:mme),z3e(1:mme),y3e(1:mme),u3e(1:mme),w011(1:mme),w001(1:mme),w101(1:mme),w000(1:mme),w100(1:mme),w010(1:mme),w110(1:mme)) map(tofrom:myden(:,:,:),mydene(:,:,:),myupar(:,:,:))
 mm_of_ns=mm(ns)
-!$omp target data map(to:w3e(1:mme),w111(1:mme),x3e(1:mme),z3e(1:mme),y3e(1:mme),u3e(1:mme),w011(1:mme),w001(1:mme),w101(1:mme),w000(1:mme),w100(1:mme),w010(1:mme),w110(1:mme)) map(tofrom:myden(:,:,:),mydene(:,:,:),myupar(:,:,:))
+!$omp target data 
 !$omp target teams loop private(rhox,rhoy) thread_limit(128)
 #endif
      do m=1,mm_of_ns
